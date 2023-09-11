@@ -6,51 +6,22 @@ struct Term {
 }
 
 struct NewDate {
-    var year: Int
-    var month: Int {
-        didSet {
-            if month > 12 {
-                year += 1
-                month = month - 12
-            } else if month < 1 {
-                year -= 1
-                month = month + 12
-            }
-        }
-    }
-    var day: Int {
-        didSet {
-            if day > 28 {
-                month += 1
-                day = day - 28
-            } else if day < 1 {
-                month -= 1
-                day = day + 28
-            }
-        }
-    }
-    
-    var onlyDay: Int {
-        return (year * 12 * 28) + (month * 28) + day
-    }
+    var day: Int
 
-    init(year: String, month: String, day: String) {
-        self.year = Int(year)!
-        self.month = Int(month)!
-        self.day = Int(day)!
+    init(year: Int, month: Int, day: Int) {
+        self.day = (year * 12 * 28) + (month * 28) + day
     }
 
     init(date: String) {
         let date = date.split(separator: ".")
-        self.year = Int(date[0])!
-        self.month = Int(date[1])!
-        self.day = Int(date[2])!
+        let year = Int(date[0])!
+        let month = Int(date[1])!
+        let day = Int(date[2])!
+        self.day = (year * 12 * 28) + (month * 28) + day
     }
 
-    mutating func addMonth(_ month: Int) -> NewDate {
-        var date = self
-        date.month += month
-        return date
+    mutating func addMonth(_ month: Int) {
+        self.day += month * 28
     }
 }
 
@@ -78,9 +49,10 @@ func solution(_ today:String, _ terms:[String], _ privacies:[String]) -> [Int] {
 
         terms.forEach { term in
             guard term.term == privacyTerm else { return }
-            let date = privacyDate.addMonth(term.period)
+            var date = privacyDate
+            date.addMonth(term.period)
 
-            guard date.onlyDay <= nowDate.onlyDay else { return }
+            guard date.day <= nowDate.day else { return }
             result.append(i + 1)
         }
     }
