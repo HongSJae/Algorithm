@@ -1,22 +1,14 @@
 from collections import deque
 
 def solution(priorities, location):
-    result = []
-    chrInt = 65
-    tuples = deque()
-    for p in priorities:
-        tuples.append((p, chr(chrInt)))
-        chrInt += 1
-    while 1:
-        print(result)
-        pop = tuples.popleft()
-        if not tuples: 
-            result.append(pop)
-            break
-        if pop[0] >= max(tuples, key = lambda x:x[0])[0]:
-            result.append(pop)
-        else:
-            tuples.append(pop)
+    result = 0
+    deq = deque([(i, p) for (i, p) in enumerate(priorities)])
 
-    arr = [x[1] for x in result]
-    return arr.index(chr(65 + location)) + 1
+    while True:
+        pop = deq.popleft()
+        if any(pop[1] < q[1] for q in deq):
+            deq.append(pop)
+        else:
+            result += 1
+            if pop[0] == location:
+                return result
